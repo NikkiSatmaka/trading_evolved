@@ -1,0 +1,65 @@
+#+TITLE: Zipline install guide
+
+* [[https://www.quantopian.com/posts/new-book-on-quantopian-slash-zipline-backtesting-and-modeling][Guide]]
+** Uninstall all prior copies of python, anaconda
+NOTE: After doing this multiple times over the past few days, I opted to just delete the zipline environment within Anaconda. I then removed the corresponding subdirectory on my home folder . This process was successful when I finally got the configuration steps in a working order. Also, I had followed Lauren's recommendation to install VS14 build tools and add "RC.exe" to the path.
+** Install the latest Anaconda Distribution –
+[[https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html#installing-conda-on-a-system-that-has-other-python-installations-or-packages][Anaconda/Miniconda Install Guide]]
+NOTE: I use miniconda
+** Update conda:
+#+BEGIN_SRC base
+conda update conda
+#+END_SRC
+** Create new zipline env:
+#+BEGIN_SRC base
+conda create -n zip36 python=3.6
+#+END_SRC
+** Activate env:
+#+BEGIN_SRC zip35
+conda activate zip36
+#+END_SRC
+** Install modules using pip and conda (specific method is important):
+#+BEGIN_SRC zip35
+conda install -c Quantopian zipline
+conda install tqdm jupyterlab
+conda install -c conda-forge jupyter_conda
+conda install scikit-learn seaborn matplotlib pytables nose sphinx mpi4py
+#+END_SRC
+** Upgrade pip:
+#+BEGIN_SRC zip35
+python -m pip install –upgrade pip
+pip install pyfolio
+#+END_SRC
+** Verify dependencies,
+#+BEGIN_SRC zip35
+pip install pipdeptree
+pipdeptree -p zipline
+#+END_SRC
+NOTE: Look for any issues that might be at top of list. I saw none following these steps.
+** Fix zipline benchmarks.py issues
+[[https://github.com/quantopian/zipline/issues/2480#issuecomment-504387554][Source]]
+Make a backup of the benchmarks.py and loader.py files in
+#+BEGIN_SRC
+cd ~/anaconda3/envs/zip35/lib/python3.5/site-packages/zipline/data/
+cd ~/miniconda3/envs/zip35/lib/python3.5/site-packages/zipline/data/
+#+END_SRC
+
+Copy the benchmarks.py file in this git repo and paste it to the previous directory
+
+Bypass the cache in loader.py
+#+BEGIN_SRC
+    """
+    if data is not None:
+        return data
+    """
+#+END_SRC
+** Import quandl bundle:
+#+BEGIN_SRC zip35
+QUANDL_API_KEY=your_own_api_key zipline ingest –b quandl
+#+END_SRC
+** Install Norgate and Norgate-zipline integration (optional)
+#+BEGIN_SRC zip35
+pip install norgatedata zipline-norgatedata
+#+END_SRC
+** Post-install
+After most of the individual installs/updates, I would open Jupyter Notebook and run a couple quick tests to make sure things were progressing properly. I had identified Kernel errors and other issues during previous attempts.
